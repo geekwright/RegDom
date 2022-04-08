@@ -169,7 +169,7 @@ class PublicSuffixList
      * Read PSL from the URL or file specified in $this->url.
      * If we process a remote URL, save a local copy.
      *
-     * @return bool|string PSL file contents or false on error
+     * @return string|false PSL file contents or false on error
      */
     protected function readPSL()
     {
