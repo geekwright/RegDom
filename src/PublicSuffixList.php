@@ -219,14 +219,14 @@ class PublicSuffixList
      *
      * @param string $url URL/filename of source PSL
      *
-     * @return bool|string[] PSL tree
+     * @return false|string[] PSL tree
      */
     protected function readCachedPSL($url)
     {
         $cacheFile = $this->getCacheFileName($url);
         if (file_exists($cacheFile)) {
             $cachedTree = file_get_contents($cacheFile);
-            return unserialize($cachedTree);
+            return unserialize($cachedTree, array('allowed_classes' => false));
         }
         return false;
     }
