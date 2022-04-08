@@ -1,7 +1,7 @@
 filter:
     excluded_paths: [archive/*, tests/*, data/*]
 tools:
-    external_code_coverage: true
+    external_code_coverage: false
 checks:
     php:
         code_rating: true
@@ -43,11 +43,9 @@ checks:
         parameters_in_camelcaps: true
         parameter_non_unique: true
         parameter_doc_comments: true
-        code_rating: true
         closure_use_not_conflicting: true
         comparison_always_same_result: true
         deprecated_code_usage: true
-        duplication: true
         align_assignments: false
         argument_type_checks: true
         assignment_of_null_return: true
