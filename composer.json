@@ -1,6 +1,7 @@
 {
   "name": "geekwright/regdom",
   "description": "OO adaptation of Florian Sager's regdom library for querying Mozilla Public Suffix List",
+  "version": "1.0.10",
   "keywords": [
     "public",
     "suffix",
@@ -17,15 +18,15 @@
     }
   ],
   "require": {
-    "php": ">=5.3.9",
-    "symfony/polyfill-mbstring": "^1.3.0"
+    "php": ">=7.4.0",
+    "symfony/polyfill-mbstring": "^1.29.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "^4.8|^5.7"
+    "phpunit/phpunit": "^9.6|^11.2.1"
   },
   "autoload": {
     "psr-4": {
-      "Geekwright\\RegDom\\": "src/"
+      "Geekwright\\Regdom\\": "src/"
     }
   },
   "autoload-dev": {
