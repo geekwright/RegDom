@@ -40,16 +40,16 @@ class RegisteredDomain
      */
     protected function normalizeHost($url)
     {
-        if ($url === null) {
+        if (null === $url) {
             return '';
         }
         $host = (false !== strpos($url, '/')) ? parse_url($url, PHP_URL_HOST) : $url;
 
-        $parts = $host !== null ? explode('.', $host) : [];
+        $parts = null !== $host ? explode('.', $host) : [];
 
         $utf8Host = '';
         foreach ($parts as $part) {
-            $utf8Host = $utf8Host . (($utf8Host === '') ? '' : '.') . $this->convertPunycode($part);
+            $utf8Host = $utf8Host . (('' === $utf8Host) ? '' : '.') . $this->convertPunycode($part);
         }
 
         return mb_strtolower($utf8Host);
@@ -64,7 +64,7 @@ class RegisteredDomain
      */
     protected function convertPunycode($part)
     {
-        if (strpos($part, 'xn--')===0) {
+        if (0 === strpos($part, 'xn--')) {
             if (function_exists('idn_to_utf8')) {
                 if (defined('INTL_IDNA_VARIANT_UTS46')) { // PHP 7.2
                     return idn_to_utf8($part, 0, INTL_IDNA_VARIANT_UTS46);
@@ -94,7 +94,7 @@ class RegisteredDomain
         $skew = 38;
         $damp = 700;
 
-        if ($encoded === null || strpos($encoded, $prefix) !== 0 || strlen(trim(str_replace($prefix, '', $encoded))) == 0) {
+        if (null === $encoded || 0 !== strpos($encoded, $prefix) || 0 == strlen(trim(str_replace($prefix, '', $encoded)))) {
             return $encoded;
         }
 
@@ -191,7 +191,7 @@ class RegisteredDomain
         // assure there is at least 1 TLD in the stripped signing domain
         if (!strpos($result, '.')) {
             $cnt = count($signingDomainParts);
-            if ($cnt == 1 || $signingDomainParts[$cnt-2] == '') {
+            if (1 == $cnt || '' == $signingDomainParts[$cnt-2]) {
                 return null;
             }
             return $signingDomainParts[$cnt-2] . '.' . $signingDomainParts[$cnt-1];
@@ -222,9 +222,9 @@ class RegisteredDomain
             return $sub;
         }
 
-        if ($result === '') {
+        if ('' === $result) {
             return $sub;
-        } elseif ($result !== null && strlen($result) > 0) {
+        } elseif (null !== $result && strlen($result) > 0) {
             return $result . '.' . $sub;
         }
         return null;

@@ -96,7 +96,7 @@ class PublicSuffixList
         $lines = explode("\n", $fileData);
 
         foreach ($lines as $line) {
-            if ($this->startsWith($line, '//') || $line == '') {
+            if ($this->startsWith($line, '//') || '' == $line) {
                 continue;
             }
 
@@ -287,8 +287,8 @@ class PublicSuffixList
         $dir = __DIR__ . $this->dataDir;
         if (is_dir($dir)) {
             if ($dirHandle = opendir($dir)) {
-                while (($file = readdir($dirHandle)) !== false) {
-                    if (filetype($dir . $file) === 'file'
+                while (false !== ($file = readdir($dirHandle))) {
+                    if ('file' === filetype($dir . $file)
                         && (false === $cacheOnly || $this->startsWith($file, $this->cachedPrefix))) {
                         unlink($dir . $file);
                     }

@@ -18,11 +18,11 @@ if (PHP_SAPI != 'cli') {
 
 $format = 'json';
 if ($argc > 1) {
-    if ($argv[1] == 'perl') {
+    if ('perl' == $argv[1]) {
         $format = 'perl';
-    } elseif ($argv[1] == 'c') {
+    } elseif ('c' == $argv[1]) {
         $format = 'c';
-    } elseif ($argv[1] == 'php') {
+    } elseif ('php' == $argv[1]) {
         $format = 'php';
     }
 }
@@ -72,21 +72,21 @@ function printNode($key, $valueTree, $isAssignment = false, $depth = 0)
     global $format;
 
     if ($isAssignment) {
-        if ($format == 'perl') {
+        if ('perl' == $format) {
             echo "$key = {";
         } else {
             echo "$key = array(";
         }
     } else {
-        if (strcmp($key, '!')==0) {
-            if ($format == 'perl') {
+        if (0 == strcmp($key, '!')) {
+            if ('perl' == $format) {
                 echo "'!' => {}";
             } else {
                 echo "'!' => ''";
             }
             return;
         } else {
-            if ($format == 'perl') {
+            if ('perl' == $format) {
                 echo "'$key' => {";
             } else {
                 echo str_repeat('  ', $depth)."'$key' => array(";
@@ -108,7 +108,7 @@ function printNode($key, $valueTree, $isAssignment = false, $depth = 0)
         }
     }
 
-    if ($format == 'perl') {
+    if ('perl' == $format) {
         echo '}';
     } else {
         echo ')';
@@ -124,7 +124,7 @@ function printNode_C($key, $valueTree)
     $keys = array_keys($valueTree);
 
     if (count($keys)>0) {
-        if (strcmp($keys['!'], '!')==0) {
+        if (0 == strcmp($keys['!'], '!')) {
             echo '!';
         } else {
             echo '(' .count($keys). ':';
@@ -159,7 +159,7 @@ $commentsection = '';
 
 foreach ($lines as $line) {
     if ($licence && startsWith($line, '//')) {
-        if ($format == 'perl') {
+        if ('perl' == $format) {
             $commentsection .= '# ' .substr($line, 2)."\n";
         } else {
             $commentsection .= $line."\n";
@@ -172,7 +172,7 @@ foreach ($lines as $line) {
         continue;
     }
 
-    if (startsWith($line, '//') || $line == '') {
+    if (startsWith($line, '//') || '' == $line) {
         continue;
     }
 

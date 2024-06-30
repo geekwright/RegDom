@@ -48,7 +48,7 @@ function getRegisteredDomain($signingDomain)
     // assure there is at least 1 TLD in the stripped signing domain
     if (!strpos($result, '.')) {
         $cnt = count($signingDomainParts);
-        if ($cnt==1 || $signingDomainParts[$cnt-2]== '') {
+        if (1 == $cnt || '' == $signingDomainParts[$cnt-2]) {
             return null;
         }
         return $signingDomainParts[$cnt-2].'.'.$signingDomainParts[$cnt-1];
@@ -73,7 +73,7 @@ function findRegisteredDomain($remainingSigningDomainParts, &$treeNode)
     }
 
     // this is a hack 'cause PHP interpretes '' as NULL
-    if ($result == '#') {
+    if ('#' == $result) {
         return $sub;
     } elseif (strlen($result)>0) {
         return $result.'.'.$sub;
