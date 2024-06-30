@@ -56,9 +56,9 @@ function buildSubdomain(&$node, $tldParts)
 
     if (!array_key_exists($dom, $node)) {
         if ($isNotDomain) {
-            $node[$dom] = array("!" => "");
+            $node[$dom] = ["!" => ""];
         } else {
-            $node[$dom] = array();
+            $node[$dom] = [];
         }
     }
 
@@ -150,7 +150,7 @@ function printNode_C($key, $valueTree)
 
 error_reporting(E_ERROR);
 
-$tldTree = array();
+$tldTree = [];
 $list = file_get_contents(URL);
 // $list = "bg\na.bg\n0.bg\n!c.bg\n";
 $lines = explode("\n", $list);
