@@ -8,7 +8,7 @@ the list, please see [publicsuffix.org](https://publicsuffix.org/)
 
 # Installation
 
-> composer require geekwright/regdom
+> composer require xoops/regdom
 
 # Usage
 

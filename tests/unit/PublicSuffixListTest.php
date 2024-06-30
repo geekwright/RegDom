@@ -14,7 +14,7 @@ class PublicSuffixListTest extends TestCase
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->object = new PublicSuffixList();
     }
@@ -23,13 +23,13 @@ class PublicSuffixListTest extends TestCase
      * Tears down the fixture, for example, closes a network connection.
      * This method is called after a test is executed.
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
     }
 
     public function testContracts()
     {
-        $this->assertInstanceOf('\Xoops\RegDom\PublicSuffixList', $this->object);
+        $this->assertInstanceOf(PublicSuffixList::class, $this->object);
     }
 
     public function testGetSet()

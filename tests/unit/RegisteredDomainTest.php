@@ -1,7 +1,12 @@
 <?php
 namespace Xoops\RegDom;
 
+use Xoops\RegDom\RegisteredDomain;
 use PHPUnit\Framework\TestCase;
+//use PHPUnit\Framework\Attributes\DataProvider; //PHP 8
+
+include __DIR__ . '/../../src/RegisteredDomain.php';
+include __DIR__ . '/../../src/PublicSuffixList.php';
 
 /**
  * Class TestProtectedDecodePunycode used to test protected decodePunycode() method that is
@@ -26,7 +31,7 @@ class RegisteredDomainTest extends TestCase
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         //$this->object = new RegisteredDomain();
     }
@@ -35,20 +40,22 @@ class RegisteredDomainTest extends TestCase
      * Tears down the fixture, for example, closes a network connection.
      * This method is called after a test is executed.
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
     }
 
     public function testContracts()
     {
         $object = new RegisteredDomain();
-        $this->assertInstanceOf('\Xoops\RegDom\RegisteredDomain', $object);
+        $this->assertInstanceOf(RegisteredDomain::class, $object);
     }
 
+
+//    #[dataProvider('domainsProvider')] //PHP 8
     /**
      * @dataProvider domainsProvider
      */
-    public function testGetRegisteredDomain($url, $regdom)
+    public function testGetRegisteredDomain($url = '', $regdom = '')
     {
         $object = new RegisteredDomain();
         $this->assertEquals($regdom, $object->getRegisteredDomain($url));
@@ -57,7 +64,7 @@ class RegisteredDomainTest extends TestCase
     /**
      * @return array
      */
-    public function domainsProvider()
+    public static function domainsProvider()
     {
         $provider = [
             [null, null],
@@ -154,6 +161,7 @@ class RegisteredDomainTest extends TestCase
         return $provider;
     }
 
+//    #[\PHPUnit\Framework\Attributes\DataProvider('punycodeProvider')] //PHP 8
     /**
      * @dataProvider punycodeProvider
      */
@@ -166,7 +174,7 @@ class RegisteredDomainTest extends TestCase
     /**
      * @return array
      */
-    public function punycodeProvider()
+    public static function punycodeProvider()
     {
         $provider = [
             [null, null],
