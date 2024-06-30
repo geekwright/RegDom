@@ -1,6 +1,8 @@
 <?php
 namespace Geekwright\RegDom;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * Class TestProtectedDecodePunycode used to test protected decodePunycode() method that is
  * only used if intl extension is not loaded.
@@ -13,7 +15,7 @@ class TestProtectedDecodePunycode extends RegisteredDomain
     }
 }
 
-class RegisteredDomainTest extends \PHPUnit_Framework_TestCase
+class RegisteredDomainTest extends TestCase
 {
     /**
      * @var RegisteredDomain

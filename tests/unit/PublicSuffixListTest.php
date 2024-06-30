@@ -1,7 +1,9 @@
 <?php
 namespace Geekwright\RegDom;
 
-class PublicSuffixListTest extends \PHPUnit_Framework_TestCase
+use PHPUnit\Framework\TestCase;
+
+class PublicSuffixListTest extends TestCase
 {
     /**
      * @var PublicSuffixList
