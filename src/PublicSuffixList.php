@@ -58,7 +58,7 @@ class PublicSuffixList
     }
 
     /**
-     * load the PSL tree, automatically handling caches
+     * Load the PSL tree, automatically handling caches
      *
      * @return void (results in $this->tree)
      *
@@ -159,7 +159,7 @@ class PublicSuffixList
      */
     public function getTree()
     {
-        if (null===$this->tree) {
+        if (null === $this->tree) {
             $this->loadTree();
         }
         return $this->tree;
@@ -185,14 +185,14 @@ class PublicSuffixList
         }
 
         // try again with curl if file_get_contents failed
-        if (function_exists('curl_init') && false !== ($curlHandle  = curl_init())) {
+        if (function_exists('curl_init') && false !== ($curlHandle = curl_init())) {
             curl_setopt($curlHandle, CURLOPT_URL, $this->url);
             curl_setopt($curlHandle, CURLOPT_FAILONERROR, true);
             curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($curlHandle, CURLOPT_CONNECTTIMEOUT, 5);
             $curlReturn = curl_exec($curlHandle);
             curl_close($curlHandle);
-            if (false !== $curlReturn) {
+            if (false !== $curlReturn && is_string($curlReturn)) {
                 if ($remote) {
                     $this->saveLocalPSL($curlReturn);
                 }
@@ -226,7 +226,7 @@ class PublicSuffixList
         $cacheFile = $this->getCacheFileName($url);
         if (file_exists($cacheFile)) {
             $cachedTree = file_get_contents($cacheFile);
-            if((int) PHP_VERSION_ID < 70000) {
+            if ((int) PHP_VERSION_ID < 70000) {
                 return unserialize($cachedTree);
             }
             return unserialize($cachedTree, array('allowed_classes' => false));
