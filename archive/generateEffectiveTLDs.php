@@ -12,7 +12,7 @@
 // DEFINE('URL', 'https://publicsuffix.org/list/public_suffix_list.dat');
 define('URL', 'data/public_suffix_list.dat');
 
-if (PHP_SAPI != "cli") {
+if (PHP_SAPI != 'cli') {
     exit;
 }
 
@@ -49,14 +49,14 @@ function buildSubdomain(&$node, $tldParts)
     $dom = trim(array_pop($tldParts));
 
     $isNotDomain = false;
-    if (startsWith($dom, "!")) {
+    if (startsWith($dom, '!')) {
         $dom = substr($dom, 1);
         $isNotDomain = true;
     }
 
     if (!array_key_exists($dom, $node)) {
         if ($isNotDomain) {
-            $node[$dom] = ["!" => ""];
+            $node[$dom] = ['!' => ''];
         } else {
             $node[$dom] = [];
         }
@@ -72,21 +72,21 @@ function printNode($key, $valueTree, $isAssignment = false, $depth = 0)
     global $format;
 
     if ($isAssignment) {
-        if ($format == "perl") {
+        if ($format == 'perl') {
             echo "$key = {";
         } else {
             echo "$key = array(";
         }
     } else {
-        if (strcmp($key, "!")==0) {
-            if ($format == "perl") {
+        if (strcmp($key, '!')==0) {
+            if ($format == 'perl') {
                 echo "'!' => {}";
             } else {
                 echo "'!' => ''";
             }
             return;
         } else {
-            if ($format == "perl") {
+            if ($format == 'perl') {
                 echo "'$key' => {";
             } else {
                 echo str_repeat('  ', $depth)."'$key' => array(";
@@ -102,13 +102,13 @@ function printNode($key, $valueTree, $isAssignment = false, $depth = 0)
         printNode($key, $valueTree[$key], false, $depth + 1);
 
         if ($i+1 != count($valueTree)) {
-            echo ",";
+            echo ',';
         } else {
-            echo "";
+            echo '';
         }
     }
 
-    if ($format == "perl") {
+    if ($format == 'perl') {
         echo '}';
     } else {
         echo ')';
@@ -124,10 +124,10 @@ function printNode_C($key, $valueTree)
     $keys = array_keys($valueTree);
 
     if (count($keys)>0) {
-        if (strcmp($keys['!'], "!")==0) {
-            echo "!";
+        if (strcmp($keys['!'], '!')==0) {
+            echo '!';
         } else {
-            echo "(".count($keys).":";
+            echo '(' .count($keys). ':';
 
             for ($i=0; $i<count($keys); $i++) {
                 $key = $keys[$i];
@@ -137,7 +137,7 @@ function printNode_C($key, $valueTree)
                 // }
 
                 if ($i+1 != count($valueTree)) {
-                    echo ",";
+                    echo ',';
                 }
             }
 
@@ -158,21 +158,21 @@ $licence = true;
 $commentsection = '';
 
 foreach ($lines as $line) {
-    if ($licence && startsWith($line, "//")) {
-        if ($format == "perl") {
-            $commentsection .= "# ".substr($line, 2)."\n";
+    if ($licence && startsWith($line, '//')) {
+        if ($format == 'perl') {
+            $commentsection .= '# ' .substr($line, 2)."\n";
         } else {
             $commentsection .= $line."\n";
         }
 
-        if (startsWith($line, "// ***** END LICENSE BLOCK")) {
+        if (startsWith($line, '// ***** END LICENSE BLOCK')) {
             $licence = false;
             $commentsection .= "\n";
         }
         continue;
     }
 
-    if (startsWith($line, "//") || $line == '') {
+    if (startsWith($line, '//') || $line == '') {
         continue;
     }
 
@@ -199,7 +199,7 @@ switch ($format) {
     case 'c':
         echo $commentsection."\n";
         echo "char* tldString = \"";
-        printNode_C("root", $tldTree);
+        printNode_C('root', $tldTree);
         echo "\";\n";
         break;
     case 'perl':
