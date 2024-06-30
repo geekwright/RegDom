@@ -33,8 +33,8 @@ if ($argc < 2) {
     exit;
 }
 
-require 'effectiveTLDs.inc.php';
-$tldTree = require 'regDomain.inc.php';
+require __DIR__ . '/effectiveTLDs.inc.php';
+$tldTree = require  __DIR__ . '/regDomain.inc.php';
 
 // strip subdomains from every signing domain
 // char dom[] = "sub2.sub.registered.nom.ad";
