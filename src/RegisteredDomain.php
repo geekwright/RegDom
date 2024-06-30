@@ -123,9 +123,13 @@ class RegisteredDomain
             $delta = $idx - $old_idx;
             $delta = (int) ($is_first ? ($delta / $damp) : ($delta / 2));
             $delta += (int) ($delta / ($deco_len + 1));
-            for ($k = 0; $delta > (($base - $tmin) * $tmax) / 2; $k += $base) {
+
+            $k = 0;
+            while ($delta > (($base - $tmin) * $tmax) / 2) {
                 $delta = (int) ($delta / ($base - $tmin));
+                $k += $base;
             }
+
             $bias = (int) ($k + ($base - $tmin + 1) * $delta / ($delta + $skew));
             $is_first = false;
             $char += (int)($idx / ($deco_len + 1));
