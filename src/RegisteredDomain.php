@@ -40,8 +40,13 @@ class RegisteredDomain
      */
     protected function normalizeHost($url)
     {
-        $host = (false!==strpos($url, '/')) ? parse_url($url, PHP_URL_HOST) : $url;
-        $parts = explode('.', $host);
+        if ($url === null) {
+            return '';
+        }
+        $host = (false !== strpos($url, '/')) ? parse_url($url, PHP_URL_HOST) : $url;
+
+        $parts = $host !== null ? explode('.', $host) : [];
+
         $utf8Host = '';
         foreach ($parts as $part) {
             $utf8Host = $utf8Host . (($utf8Host === '') ? '' : '.') . $this->convertPunycode($part);
@@ -89,7 +94,7 @@ class RegisteredDomain
         $skew = 38;
         $damp = 700;
 
-        if (strpos($encoded, $prefix) !== 0 || strlen(trim(str_replace($prefix, '', $encoded))) == 0) {
+        if ($encoded === null || strpos($encoded, $prefix) !== 0 || strlen(trim(str_replace($prefix, '', $encoded))) == 0) {
             return $encoded;
         }
 
@@ -209,9 +214,7 @@ class RegisteredDomain
         $result = null;
         if (isset($treeNode['!'])) {
             return '';
-        }
-
-        if (is_array($treeNode) && array_key_exists($sub, $treeNode)) {
+        } elseif (is_array($treeNode) && array_key_exists($sub, $treeNode)) {
             $result = $this->findRegisteredDomain($remainingSigningDomainParts, $treeNode[$sub]);
         } elseif (is_array($treeNode) && array_key_exists('*', $treeNode)) {
             $result = $this->findRegisteredDomain($remainingSigningDomainParts, $treeNode['*']);
@@ -221,9 +224,7 @@ class RegisteredDomain
 
         if ($result === '') {
             return $sub;
-        }
-
-        if (is_string($result) && strlen($result) > 0) {
+        } elseif ($result !== null && strlen($result) > 0) {
             return $result . '.' . $sub;
         }
         return null;
