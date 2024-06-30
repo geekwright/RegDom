@@ -209,7 +209,9 @@ class RegisteredDomain
         $result = null;
         if (isset($treeNode['!'])) {
             return '';
-        } elseif (is_array($treeNode) && array_key_exists($sub, $treeNode)) {
+        }
+
+        if (is_array($treeNode) && array_key_exists($sub, $treeNode)) {
             $result = $this->findRegisteredDomain($remainingSigningDomainParts, $treeNode[$sub]);
         } elseif (is_array($treeNode) && array_key_exists('*', $treeNode)) {
             $result = $this->findRegisteredDomain($remainingSigningDomainParts, $treeNode['*']);
@@ -219,7 +221,9 @@ class RegisteredDomain
 
         if ($result === '') {
             return $sub;
-        } elseif (strlen($result)>0) {
+        }
+
+        if (is_string($result) && strlen($result) > 0) {
             return $result . '.' . $sub;
         }
         return null;
