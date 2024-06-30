@@ -40,16 +40,19 @@ class RegisteredDomain
      */
     protected function normalizeHost($url)
     {
-        if (null === $url) {
+        if (empty($url)) {
             return '';
         }
         $host = (false !== strpos($url, '/')) ? parse_url($url, PHP_URL_HOST) : $url;
+        $host = $host ?: ''; // Ensure $host is a string, even if parse_url returns false
 
-        $parts = null !== $host ? explode('.', $host) : [];
+        $parts = explode('.', $host);
 
         $utf8Host = '';
+        $separator = '';
         foreach ($parts as $part) {
-            $utf8Host = $utf8Host . (('' === $utf8Host) ? '' : '.') . $this->convertPunycode($part);
+            $utf8Host .= $separator . $this->convertPunycode($part);
+            $separator = '.';
         }
 
         return mb_strtolower($utf8Host);
