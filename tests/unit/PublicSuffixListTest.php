@@ -35,7 +35,7 @@ class PublicSuffixListTest extends TestCase
     public function testGetSet()
     {
         $tree = $this->object->getTree();
-        $this->assertTrue(is_array($tree));
+        $this->assertIsArray($tree);
         $this->assertArrayHasKey('com', $tree);
     }
 
@@ -43,7 +43,7 @@ class PublicSuffixListTest extends TestCase
     {
         $this->object->clearDataDirectory();
         $tree = $this->object->getTree();
-        $this->assertTrue(is_array($tree));
+        $this->assertIsArray($tree);
         $this->assertArrayHasKey('com', $tree);
     }
 
@@ -51,7 +51,7 @@ class PublicSuffixListTest extends TestCase
     {
         $this->object->clearDataDirectory(true);
         $tree = $this->object->getTree();
-        $this->assertTrue(is_array($tree));
+        $this->assertIsArray($tree);
         $this->assertArrayHasKey('com', $tree);
     }
 }
