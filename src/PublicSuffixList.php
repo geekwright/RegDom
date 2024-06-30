@@ -1,11 +1,11 @@
 <?php
-namespace Geekwright\RegDom;
+namespace Xoops\RegDom;
 
 /**
  * Manage the Public Suffix List (PSL) data. This includes, downloading, converting to an array tree
  * structure for access in PHP, and caching the results.
  *
- * @package   Geekwright\RegDom
+ * @package   Xoops\RegDom
  * @author    Florian Sager, 06.08.2008, <sager@agitos.de>
  * @author    Marcus Bointon (https://github.com/Synchro/regdom-php)
  * @author    Richard Griffith <richard@geekwright.com>

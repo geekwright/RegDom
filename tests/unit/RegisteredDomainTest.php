@@ -1,5 +1,5 @@
 <?php
-namespace Geekwright\RegDom;
+namespace Xoops\RegDom;
 
 use PHPUnit\Framework\TestCase;
 
@@ -42,7 +42,7 @@ class RegisteredDomainTest extends TestCase
     public function testContracts()
     {
         $object = new RegisteredDomain();
-        $this->assertInstanceOf('\Geekwright\RegDom\RegisteredDomain', $object);
+        $this->assertInstanceOf('\Xoops\RegDom\RegisteredDomain', $object);
     }
 
     /**

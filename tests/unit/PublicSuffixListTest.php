@@ -1,5 +1,5 @@
 <?php
-namespace Geekwright\RegDom;
+namespace Xoops\RegDom;
 
 use PHPUnit\Framework\TestCase;
 
@@ -29,7 +29,7 @@ class PublicSuffixListTest extends TestCase
 
     public function testContracts()
     {
-        $this->assertInstanceOf('\Geekwright\RegDom\PublicSuffixList', $this->object);
+        $this->assertInstanceOf('\Xoops\RegDom\PublicSuffixList', $this->object);
     }
 
     public function testGetSet()

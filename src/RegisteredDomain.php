@@ -1,12 +1,12 @@
 <?php
-namespace Geekwright\RegDom;
+namespace Xoops\RegDom;
 
 /**
  * Class RegisteredDomain
  *
  * Determine the registrable domain portion of a URL, respecting the public suffix list conventions
  *
- * @package   Geekwright\RegDom
+ * @package   Xoops\RegDom
  * @author    Florian Sager, 06.08.2008, <sager@agitos.de>
  * @author    Marcus Bointon (https://github.com/Synchro/regdom-php)
  * @author    Richard Griffith <richard@geekwright.com>
