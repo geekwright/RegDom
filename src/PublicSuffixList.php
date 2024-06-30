@@ -76,7 +76,7 @@ class PublicSuffixList
         $this->tree = array();
         $list = $this->readPSL();
 
-        if (false===$list) {
+        if (false === $list) {
             throw new \RuntimeException('Cannot read ' . $this->url);
         }
 
