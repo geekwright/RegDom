@@ -224,15 +224,11 @@ class PublicSuffixList
     protected function readCachedPSL($url)
     {
         $cacheFile = $this->getCacheFileName($url);
-        if (file_exists($cacheFile)) {
-            $cachedTree = file_get_contents($cacheFile);
-            if (PHP_VERSION_ID < 70000) {
-                return unserialize($cachedTree);
-            }
-            return unserialize($cachedTree, ['allowed_classes' => false]);
-        }
-        return false;
+        return file_exists($cacheFile)
+            ? unserialize(file_get_contents($cacheFile), ['allowed_classes' => false])
+            : false;
     }
+
 
     /**
      * Cache the current Public Suffix List tree and associate with the specified source
