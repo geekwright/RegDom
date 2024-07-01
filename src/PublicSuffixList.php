@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Xoops\RegDom;
 
 /**
@@ -13,19 +14,17 @@ namespace Xoops\RegDom;
  */
 class PublicSuffixList
 {
-    protected $sourceURL = 'https://publicsuffix.org/list/public_suffix_list.dat';
-    protected $localPSL = 'public_suffix_list.dat';
-    protected $cachedPrefix = 'cached_';
-
-    protected $tree;
-    protected $url;
-    protected $dataDir = '/../data/'; // relative to __DIR__
-
+    private string $sourceURL = 'https://publicsuffix.org/list/public_suffix_list.dat';
+    private string $localPSL = 'public_suffix_list.dat';
+    private string $cachedPrefix = 'cached_';
+    private ?array $tree = null;
+    private ?string $url = null;
+    private string $dataDir = '/../data/'; // relative to __DIR__
     /**
      * PublicSuffixList constructor.
      * @param string|null $url URL for the PSL or null to use default
      */
-    public function __construct($url = null)
+    public function __construct(?string $url = null)
     {
         $this->setURL($url);
     }
@@ -34,10 +33,9 @@ class PublicSuffixList
      * Set the URL, and clear any existing tree
      *
      * @param string|null $url URL for the PSL or null to use default
-     *
      * @return void
      */
-    public function setURL($url)
+    public function setURL(?string $url): void
     {
         $this->url = $url;
         $this->tree = null;
@@ -49,7 +47,7 @@ class PublicSuffixList
      *
      * @return void
      */
-    protected function setFallbackURL()
+    private function setFallbackURL(): void
     {
         $this->setLocalPSLName($this->url);
         if (null === $this->url) {
@@ -61,15 +59,14 @@ class PublicSuffixList
      * Load the PSL tree, automatically handling caches
      *
      * @return void (results in $this->tree)
-     *
      * @throws \RuntimeException
      */
-    protected function loadTree()
+    private function loadTree(): void
     {
         $this->setFallbackURL();
 
         $this->tree = $this->readCachedPSL($this->url);
-        if (false !== $this->tree) {
+        if (null !== $this->tree) {
             return;
         }
 
@@ -88,15 +85,14 @@ class PublicSuffixList
      * Parse the PSL data
      *
      * @param string $fileData the PSL data
-     *
      * @return void (results in $this->tree)
      */
-    protected function parsePSL($fileData)
+    private function parsePSL(string $fileData): void
     {
         $lines = explode("\n", $fileData);
 
         foreach ($lines as $line) {
-            if ($this->startsWith($line, '//') || '' == $line) {
+            if ('' === $line || $this->startsWith($line, '//'))   {
                 continue;
             }
 
@@ -110,12 +106,11 @@ class PublicSuffixList
     /**
      * Does $search start with $startString?
      *
-     * @param string $search      the string to test
+     * @param string $search the string to test
      * @param string $startString the starting string to match
-     *
      * @return bool
      */
-    protected function startsWith($search, $startString)
+    private function startsWith(string $search, string $startString): bool
     {
         return (0 === strpos($search, $startString));
     }
@@ -123,12 +118,11 @@ class PublicSuffixList
     /**
      * Add domains to tree
      *
-     * @param array    $node     tree array by reference
+     * @param array $node tree array by reference
      * @param string[] $tldParts array of domain parts
-     *
      * @return void - changes made to $node by reference
      */
-    protected function buildSubDomain(&$node, $tldParts)
+    private function buildSubDomain(array &$node, array $tldParts): void
     {
         $dom = trim(array_pop($tldParts));
 
@@ -146,7 +140,7 @@ class PublicSuffixList
             }
         }
 
-        if (!$isNotDomain && count($tldParts) > 0) {
+        if (!$isNotDomain && 0 < count($tldParts)) {
             $this->buildSubDomain($node[$dom], $tldParts);
         }
     }
@@ -157,7 +151,7 @@ class PublicSuffixList
      * @return array the PSL tree
      * @throws \RuntimeException if PSL cannot be loaded
      */
-    public function getTree()
+    public function getTree(): array
     {
         if (null === $this->tree) {
             $this->loadTree();
@@ -171,7 +165,7 @@ class PublicSuffixList
      *
      * @return string|false PSL file contents or false on error
      */
-    protected function readPSL()
+    private function readPSL()
     {
         $parts = parse_url($this->url);
         $remote = isset($parts['scheme']) || isset($parts['host']);
@@ -206,10 +200,9 @@ class PublicSuffixList
      * Determine cache file name for a specified source
      *
      * @param string $url URL/filename of source PSL
-     *
      * @return string cache file name for given resource
      */
-    protected function getCacheFileName($url)
+    private function getCacheFileName(string $url): string
     {
         return __DIR__ . $this->dataDir . $this->cachedPrefix . md5($url);
     }
@@ -218,26 +211,23 @@ class PublicSuffixList
      * Attempt to load a cached Public Suffix List tree for a given source
      *
      * @param string $url URL/filename of source PSL
-     *
      * @return false|string[] PSL tree
      */
-    protected function readCachedPSL($url)
+    private function readCachedPSL(string $url)
     {
         $cacheFile = $this->getCacheFileName($url);
         return file_exists($cacheFile)
             ? unserialize(file_get_contents($cacheFile), ['allowed_classes' => false])
-            : false;
+            : null;
     }
-
 
     /**
      * Cache the current Public Suffix List tree and associate with the specified source
      *
      * @param string $url URL/filename of source PSL
-     *
      * @return bool|int the number of bytes that were written to the file, or false on failure
      */
-    protected function cachePSL($url)
+    private function cachePSL(string $url)
     {
         return file_put_contents($this->getCacheFileName($url), serialize($this->tree));
     }
@@ -246,10 +236,9 @@ class PublicSuffixList
      * Save a local copy of a retrieved Public Suffix List
      *
      * @param string $fileContents URL/filename of source PSL
-     *
      * @return bool|int the number of bytes that were written to the file, or false on failure
      */
-    protected function saveLocalPSL($fileContents)
+    private function saveLocalPSL(string $fileContents)
     {
         return file_put_contents(__DIR__ . $this->localPSL, $fileContents);
     }
@@ -257,11 +246,10 @@ class PublicSuffixList
     /**
      * Set localPSL name based on URL
      *
-     * @param null|string $url the URL for the PSL
-     *
+     * @param string|null $url the URL for the PSL
      * @return void (sets $this->localPSL)
      */
-    protected function setLocalPSLName($url)
+    private function setLocalPSLName(?string $url): void
     {
         if (null === $url) {
             $url = $this->sourceURL;
@@ -275,17 +263,16 @@ class PublicSuffixList
      * Delete files in the data directory
      *
      * @param bool $cacheOnly true to limit clearing to cached serialized PSLs, false to clear all
-     *
      * @return void
      */
-    public function clearDataDirectory($cacheOnly = false)
+    public function clearDataDirectory(bool $cacheOnly = false): void
     {
         $dir = __DIR__ . $this->dataDir;
         if (is_dir($dir)) {
-            if ($dirHandle = opendir($dir)) {
+            if (false !== ($dirHandle = opendir($dir))) {
                 while (false !== ($file = readdir($dirHandle))) {
                     if ('file' === filetype($dir . $file)
-                        && (false === $cacheOnly || $this->startsWith($file, $this->cachedPrefix))) {
+                        && (!$cacheOnly || $this->startsWith($file, $this->cachedPrefix))) {
                         unlink($dir . $file);
                     }
                 }

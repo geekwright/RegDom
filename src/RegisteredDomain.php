@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Xoops\RegDom;
 
 /**
@@ -12,22 +13,20 @@ namespace Xoops\RegDom;
  * @author    Richard Griffith <richard@geekwright.com>
  * @license   Apache License, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0)
  */
+
 class RegisteredDomain
 {
-    protected $tree;
-    protected $psl;
+    private ?array $tree = null;
+    private PublicSuffixList $psl;
 
     /**
      * RegisteredDomain constructor.
      *
      * @param PublicSuffixList|null $psl PublicSuffixList object, or null to use defaults
      */
-    public function __construct(PublicSuffixList $psl = null)
+    public function __construct(?PublicSuffixList $psl = null)
     {
-        if (null === $psl) {
-            $psl = new PublicSuffixList();
-        }
-        $this->psl = $psl;
+        $this->psl = $psl ?? new PublicSuffixList();
     }
 
     /**
@@ -38,7 +37,7 @@ class RegisteredDomain
      *
      * @return string
      */
-    protected function normalizeHost($url)
+    protected function normalizeHost(string $url): string
     {
         if (empty($url)) {
             return '';
@@ -59,20 +58,17 @@ class RegisteredDomain
     }
 
     /**
-     * Convert a punycode string to UTF-8 if needed
+     * Convert a punycode string to UTF-8 if needed.
      *
-     * @param string $part host component
+     * @param string $part Host component
      *
-     * @return string host component as UTF-8
+     * @return string Host component as UTF-8
      */
-    protected function convertPunycode($part)
+    protected function convertPunycode(string $part): string
     {
         if (0 === strpos($part, 'xn--')) {
             if (function_exists('idn_to_utf8')) {
-                if (defined('INTL_IDNA_VARIANT_UTS46')) { // PHP 7.2
-                    return idn_to_utf8($part, 0, INTL_IDNA_VARIANT_UTS46);
-                }
-                return idn_to_utf8($part);
+                return defined('INTL_IDNA_VARIANT_UTS46') ? idn_to_utf8($part, 0, INTL_IDNA_VARIANT_UTS46) : idn_to_utf8($part);
             }
             return $this->decodePunycode($part);
         }
@@ -80,14 +76,14 @@ class RegisteredDomain
     }
 
     /**
-     * convert punycode to UTF-8 (the hard way) Used only if idn_to_utf8() is not available
+     * Convert punycode to UTF-8 (the hard way) if idn_to_utf8() is not available.
      *
      * This fallback adapted from https://ckon.wordpress.com/2010/08/24/punycode-to-unicode-converter-php/
      *
      * @param string $encoded
      * @return string
      */
-    protected function decodePunycode($encoded)
+    protected function decodePunycode(string $encoded): string
     {
         $prefix = 'xn--';
         $safe_char = 0xFFFC;
@@ -97,7 +93,12 @@ class RegisteredDomain
         $skew = 38;
         $damp = 700;
 
-        if (null === $encoded || 0 !== strpos($encoded, $prefix) || 0 == strlen(trim(str_replace($prefix, '', $encoded)))) {
+        if (0 !== strpos($encoded, $prefix)) {
+            return $encoded;
+        }
+
+        $trimmed = trim(str_replace($prefix, '', $encoded));
+        if ('' === $trimmed) {
             return $encoded;
         }
 
@@ -171,13 +172,13 @@ class RegisteredDomain
     }
 
     /**
-     * Determine the registered domain portion of the supplied host string
+     * Determine the registered domain portion of the supplied host string.
      *
-     * @param string $host a host name or URL containing a host name
+     * @param string $host A host name or URL containing a host name
      *
-     * @return string|null shortest registrable domain portion of the supplied host or null if invalid
+     * @return string|null Shortest registrable domain portion of the supplied host or null if invalid
      */
-    public function getRegisteredDomain($host)
+    public function getRegisteredDomain(string $host): ?string
     {
         $this->tree = $this->psl->getTree();
 
@@ -194,7 +195,7 @@ class RegisteredDomain
         // assure there is at least 1 TLD in the stripped signing domain
         if (!strpos($result, '.')) {
             $cnt = count($signingDomainParts);
-            if (1 == $cnt || '' == $signingDomainParts[$cnt-2]) {
+            if (1 === $cnt || '' === $signingDomainParts[$cnt-2]) {
                 return null;
             }
             return $signingDomainParts[$cnt-2] . '.' . $signingDomainParts[$cnt-1];
@@ -203,23 +204,23 @@ class RegisteredDomain
     }
 
     /**
-     * Recursive helper method to query the PSL tree
+     * Recursive helper method to query the PSL tree.
      *
-     * @param string[] $remainingSigningDomainParts parts of domain being queried
-     * @param string[] $treeNode                    subset of tree array by reference
+     * @param string[] $remainingSigningDomainParts Parts of domain being queried
+     * @param array $treeNode Subset of tree array by reference
      *
-     * @return null|string
+     * @return string|null
      */
-    protected function findRegisteredDomain($remainingSigningDomainParts, &$treeNode)
+    protected function findRegisteredDomain(array $remainingSigningDomainParts, array &$treeNode): ?string
     {
         $sub = array_pop($remainingSigningDomainParts);
 
         $result = null;
         if (isset($treeNode['!'])) {
             return '';
-        } elseif (is_array($treeNode) && array_key_exists($sub, $treeNode)) {
+        } elseif (array_key_exists($sub, $treeNode)) {
             $result = $this->findRegisteredDomain($remainingSigningDomainParts, $treeNode[$sub]);
-        } elseif (is_array($treeNode) && array_key_exists('*', $treeNode)) {
+        } elseif (array_key_exists('*', $treeNode)) {
             $result = $this->findRegisteredDomain($remainingSigningDomainParts, $treeNode['*']);
         } else {
             return $sub;

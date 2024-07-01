@@ -1,4 +1,5 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Xoops\RegDom;
 
 use Xoops\RegDom\RegisteredDomain;
@@ -8,24 +9,24 @@ use PHPUnit\Framework\TestCase;
 include __DIR__ . '/../../src/RegisteredDomain.php';
 include __DIR__ . '/../../src/PublicSuffixList.php';
 
+
 /**
  * Class TestProtectedDecodePunycode used to test protected decodePunycode() method that is
  * only used if intl extension is not loaded.
  */
 class TestProtectedDecodePunycode extends RegisteredDomain
 {
-    public function doDecodePunycode($string)
+    public function doDecodePunycode(string $string)
     {
         return $this->decodePunycode($string);
     }
 }
-
 class RegisteredDomainTest extends TestCase
 {
     /**
      * @var RegisteredDomain
      */
-    protected $object;
+    protected RegisteredDomain $object;
 
     /**
      * Sets up the fixture, for example, opens a network connection.
@@ -33,7 +34,7 @@ class RegisteredDomainTest extends TestCase
      */
     protected function setUp(): void
     {
-        //$this->object = new RegisteredDomain();
+        $this->object = new RegisteredDomain(new PublicSuffixList());
     }
 
     /**
@@ -42,12 +43,12 @@ class RegisteredDomainTest extends TestCase
      */
     protected function tearDown(): void
     {
+        // Clean up if necessary
     }
 
-    public function testContracts()
+    public function testContracts(): void
     {
-        $object = new RegisteredDomain();
-        $this->assertInstanceOf(RegisteredDomain::class, $object);
+        $this->assertInstanceOf(RegisteredDomain::class, $this->object);
     }
 
 
@@ -55,19 +56,18 @@ class RegisteredDomainTest extends TestCase
     /**
      * @dataProvider domainsProvider
      */
-    public function testGetRegisteredDomain($url = '', $regdom = '')
+    public function testGetRegisteredDomain(string $url, ?string $regdom): void
     {
-        $object = new RegisteredDomain();
-        $this->assertEquals($regdom, $object->getRegisteredDomain($url));
+        $this->assertEquals($regdom, $this->object->getRegisteredDomain($url));
     }
 
     /**
-     * @return array
+     * @return array<int, array{0: ?string, 1: ?string}>
      */
-    public static function domainsProvider()
+    public static function domainsProvider(): array
     {
-        $provider = [
-            [null, null],
+        return [
+            ['', ''],
             // Mixed case.
             ['COM', null],
             ['example.COM', 'example.com'],
@@ -158,26 +158,25 @@ class RegisteredDomainTest extends TestCase
             ['rfu.in.ua', 'rfu.in.ua'],
             ['in.ua', null],
         ];
-        return $provider;
     }
 
 //    #[\PHPUnit\Framework\Attributes\DataProvider('punycodeProvider')] //PHP 8
     /**
      * @dataProvider punycodeProvider
      */
-    public function testDecodePunycode($punycode, $decoded)
+    public function testDecodePunycode(string $punycode, string $decoded): void
     {
-        $object = new TestProtectedDecodePunycode();
+        $object = new TestProtectedDecodePunycode(new PublicSuffixList());
         $this->assertEquals($decoded, $object->doDecodePunycode($punycode));
     }
 
     /**
-     * @return array
+     * @return array<int, array{0: ?string, 1: ?string}>
      */
-    public static function punycodeProvider()
+    public static function punycodeProvider(): array
     {
-        $provider = [
-            [null, null],
+        return [
+            ['', ''],
             // Mixed case.
             ['test', 'test'],
             // punycoded
@@ -185,6 +184,5 @@ class RegisteredDomainTest extends TestCase
             ['xn--55qx5d', '公司'],
             ['xn--fiqs8s', '中国'],
         ];
-        return $provider;
-    }
+}
 }
