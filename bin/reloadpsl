@@ -2,7 +2,7 @@
 <?php
 
 /*
- * This file is part of https://github.com/geekwright/RegDom
+ * This file is part of https://github.com/xoops/RegDom
  *
  * Clear all Public Suffix Data and load a fresh copy from publicsuffix.org
  */

@@ -8,7 +8,7 @@
     "tld",
     "regdom"
   ],
-  "homepage": "https://github.com/geekwright/RegDom",
+  "homepage": "https://github.com/xoops/RegDom",
   "type": "library",
   "license": "Apache-2.0",
   "authors": [
@@ -26,12 +26,12 @@
   },
   "autoload": {
     "psr-4": {
-      "Geekwright\\Regdom\\": "src/"
+      "Xoops\\Regdom\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Geekwright\\Regdom\\": "tests/unit/"
+      "Xoops\\Regdom\\": "tests/unit/"
     }
   },
 
