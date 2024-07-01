@@ -96,7 +96,12 @@ class PublicSuffixList
                 continue;
             }
 
-            // this line should be a TLD
+            // Ensure $this->tree is an array
+            if (null === $this->tree) {
+                $this->tree = [];
+            }
+
+            // This line should be a TLD
             $tldParts = explode('.', $line);
 
             $this->buildSubDomain($this->tree, $tldParts);
@@ -211,9 +216,9 @@ class PublicSuffixList
      * Attempt to load a cached Public Suffix List tree for a given source
      *
      * @param string $url URL/filename of source PSL
-     * @return false|string[] PSL tree
+     * @return array|null PSL tree
      */
-    private function readCachedPSL(string $url)
+    private function readCachedPSL(string $url): ?array
     {
         $cacheFile = $this->getCacheFileName($url);
         return file_exists($cacheFile)
