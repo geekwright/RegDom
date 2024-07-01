@@ -3,5 +3,7 @@
 \#*
 *.bak
 .idea/
-coverage.clover
 vendor/
+composer.lock
+coverage.clover
+git-phpcs.phar
