@@ -88,7 +88,7 @@ class PublicSuffixListTest extends TestCase
         $property->setAccessible(true);
 
 //        $expectedUrl = file_exists(dirname(__DIR__, 2) . '/data/public_suffix_list.dat') ? dirname(__DIR__, 2) . '/data/public_suffix_list.dat' : 'https://publicsuffix.org/list/public_suffix_list.dat';
-        $expectedUrl = \\file_exists(\\dirname(__DIR__, 2) . '/data/public_suffix_list.dat') ?  '/../data/public_suffix_list.dat' : 'https://publicsuffix.org/list/public_suffix_list.dat';
+        $expectedUrl = \file_exists(\dirname(__DIR__, 2) . '/data/public_suffix_list.dat') ?  '/../data/public_suffix_list.dat' : 'https://publicsuffix.org/list/public_suffix_list.dat';
         $this->assertSame($expectedUrl, $property->getValue($this->object));
     }
 }
