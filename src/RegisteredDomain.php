@@ -42,10 +42,10 @@ class RegisteredDomain
         if (empty($url)) {
             return '';
         }
-        $host = (false !== strpos($url, '/')) ? parse_url($url, PHP_URL_HOST) : $url;
+        $host = (false !== \strpos($url, '/')) ? \parse_url($url, \PHP_URL_HOST) : $url;
         $host = $host ?: ''; // Ensure $host is a string, even if parse_url returns false
 
-        $parts = explode('.', $host);
+        $parts = \explode('.', $host);
 
         $utf8Host = '';
         $separator = '';
@@ -54,7 +54,7 @@ class RegisteredDomain
             $separator = '.';
         }
 
-        return mb_strtolower($utf8Host);
+        return \mb_strtolower($utf8Host);
     }
 
     /**
@@ -66,9 +66,9 @@ class RegisteredDomain
      */
     protected function convertPunycode(string $part): string
     {
-        if (0 === strpos($part, 'xn--')) {
-            if (function_exists('idn_to_utf8')) {
-                return defined('INTL_IDNA_VARIANT_UTS46') ? idn_to_utf8($part, 0, INTL_IDNA_VARIANT_UTS46) : idn_to_utf8($part);
+        if (0 === \strpos($part, 'xn--')) {
+            if (\function_exists('idn_to_utf8')) {
+                return \defined('INTL_IDNA_VARIANT_UTS46') ? \idn_to_utf8($part, 0, \INTL_IDNA_VARIANT_UTS46) : \idn_to_utf8($part);
             }
             return $this->decodePunycode($part);
         }
@@ -93,11 +93,11 @@ class RegisteredDomain
         $skew = 38;
         $damp = 700;
 
-        if (0 !== strpos($encoded, $prefix)) {
+        if (0 !== \strpos($encoded, $prefix)) {
             return $encoded;
         }
 
-        $trimmed = trim(str_replace($prefix, '', $encoded));
+        $trimmed = \trim(\str_replace($prefix, '', $encoded));
         if ('' === $trimmed) {
             return $encoded;
         }
@@ -109,18 +109,18 @@ class RegisteredDomain
         $decoded = [];
         $output = '';
 
-        $delim_pos = strrpos($encoded, '-');
-        if ($delim_pos > strlen($prefix)) {
-            for ($k = strlen($prefix); $k < $delim_pos; ++$k) {
-                $decoded[] = ord($encoded[$k]);
+        $delim_pos = \strrpos($encoded, '-');
+        if ($delim_pos > \strlen($prefix)) {
+            for ($k = \strlen($prefix); $k < $delim_pos; ++$k) {
+                $decoded[] = \ord($encoded[$k]);
             }
         }
-        $deco_len = count($decoded);
-        $enco_len = strlen($encoded);
+        $deco_len = \count($decoded);
+        $enco_len = \strlen($encoded);
 
         for ($enco_idx = $delim_pos ? ($delim_pos + 1) : 0; $enco_idx < $enco_len; ++$deco_len) {
             for ($old_idx = $idx, $w = 1, $k = $base; 1; $k += $base) {
-                $cp = ord($encoded[$enco_idx++]);
+                $cp = \ord($encoded[$enco_idx++]);
                 $digit = ($cp - 48 < 10) ? $cp - 22 : (($cp - 65 < 26) ? $cp - 65 : (($cp - 97 < 26) ? $cp - 97 : $base));
                 $idx += $digit * $w;
                 $t = ($k <= $bias) ? $tmin : (($k >= $bias + $tmax) ? $tmax : ($k - $bias));
@@ -153,16 +153,16 @@ class RegisteredDomain
 
         foreach ($decoded as $k => $v) {
             if ($v < 128) {
-                $output .= chr($v);
+                $output .= \chr($v);
             } // 7bit are transferred literally
             elseif ($v < (1 << 11)) {
-                $output .= chr(192 + ($v >> 6)) . chr(128 + ($v & 63));
+                $output .= \chr(192 + ($v >> 6)) . \chr(128 + ($v & 63));
             } // 2 bytes
             elseif ($v < (1 << 16)) {
-                $output .= chr(224 + ($v >> 12)) . chr(128 + (($v >> 6) & 63)) . chr(128 + ($v & 63));
+                $output .= \chr(224 + ($v >> 12)) . \chr(128 + (($v >> 6) & 63)) . \chr(128 + ($v & 63));
             } // 3 bytes
             elseif ($v < (1 << 21)) {
-                $output .= chr(240 + ($v >> 18)) . chr(128 + (($v >> 12) & 63)) . chr(128 + (($v >> 6) & 63)) . chr(128 + ($v & 63));
+                $output .= \chr(240 + ($v >> 18)) . \chr(128 + (($v >> 12) & 63)) . \chr(128 + (($v >> 6) & 63)) . \chr(128 + ($v & 63));
             } // 4 bytes
             else {
                 $output .= $safe_char;
@@ -183,7 +183,7 @@ class RegisteredDomain
         $this->tree = $this->psl->getTree();
 
         $signingDomain = $this->normalizeHost($host);
-        $signingDomainParts = explode('.', $signingDomain);
+        $signingDomainParts = \explode('.', $signingDomain);
 
         $result = $this->findRegisteredDomain($signingDomainParts, $this->tree);
 
@@ -193,8 +193,8 @@ class RegisteredDomain
         }
 
         // assure there is at least 1 TLD in the stripped signing domain
-        if (!strpos($result, '.')) {
-            $cnt = count($signingDomainParts);
+        if (!\strpos($result, '.')) {
+            $cnt = \count($signingDomainParts);
             if (1 === $cnt || '' === $signingDomainParts[$cnt-2]) {
                 return null;
             }
@@ -213,14 +213,14 @@ class RegisteredDomain
      */
     protected function findRegisteredDomain(array $remainingSigningDomainParts, array &$treeNode): ?string
     {
-        $sub = array_pop($remainingSigningDomainParts);
+        $sub = \array_pop($remainingSigningDomainParts);
 
         $result = null;
         if (isset($treeNode['!'])) {
             return '';
-        } elseif (array_key_exists($sub, $treeNode)) {
+        } elseif (\array_key_exists($sub, $treeNode)) {
             $result = $this->findRegisteredDomain($remainingSigningDomainParts, $treeNode[$sub]);
-        } elseif (array_key_exists('*', $treeNode)) {
+        } elseif (\array_key_exists('*', $treeNode)) {
             $result = $this->findRegisteredDomain($remainingSigningDomainParts, $treeNode['*']);
         } else {
             return $sub;
@@ -228,7 +228,7 @@ class RegisteredDomain
 
         if ('' === $result) {
             return $sub;
-        } elseif (null !== $result && strlen($result) > 0) {
+        } elseif (null !== $result && \strlen($result) > 0) {
             return $result . '.' . $sub;
         }
         return null;

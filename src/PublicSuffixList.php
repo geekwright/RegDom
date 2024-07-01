@@ -51,7 +51,7 @@ class PublicSuffixList
     {
         $this->setLocalPSLName($this->url);
         if (null === $this->url) {
-            $this->url = file_exists(__DIR__ . $this->localPSL) ? $this->localPSL : $this->sourceURL;
+            $this->url = \file_exists(__DIR__ . $this->localPSL) ? $this->localPSL : $this->sourceURL;
         }
     }
 
@@ -89,7 +89,7 @@ class PublicSuffixList
      */
     private function parsePSL(string $fileData): void
     {
-        $lines = explode("\n", $fileData);
+        $lines = \explode("\n", $fileData);
 
         foreach ($lines as $line) {
             if ('' === $line || $this->startsWith($line, '//'))   {
@@ -102,7 +102,7 @@ class PublicSuffixList
             }
 
             // This line should be a TLD
-            $tldParts = explode('.', $line);
+            $tldParts = \explode('.', $line);
 
             $this->buildSubDomain($this->tree, $tldParts);
         }
@@ -117,7 +117,7 @@ class PublicSuffixList
      */
     private function startsWith(string $search, string $startString): bool
     {
-        return (0 === strpos($search, $startString));
+        return (0 === \strpos($search, $startString));
     }
 
     /**
@@ -129,15 +129,15 @@ class PublicSuffixList
      */
     private function buildSubDomain(array &$node, array $tldParts): void
     {
-        $dom = trim(array_pop($tldParts));
+        $dom = \trim(\array_pop($tldParts));
 
         $isNotDomain = false;
         if ($this->startsWith($dom, '!')) {
-            $dom = substr($dom, 1);
+            $dom = \substr($dom, 1);
             $isNotDomain = true;
         }
 
-        if (!array_key_exists($dom, $node)) {
+        if (!\array_key_exists($dom, $node)) {
             if ($isNotDomain) {
                 $node[$dom] = ['!' => ''];
             } else {
@@ -145,7 +145,7 @@ class PublicSuffixList
             }
         }
 
-        if (!$isNotDomain && 0 < count($tldParts)) {
+        if (!$isNotDomain && 0 < \count($tldParts)) {
             $this->buildSubDomain($node[$dom], $tldParts);
         }
     }
@@ -172,10 +172,10 @@ class PublicSuffixList
      */
     private function readPSL()
     {
-        $parts = parse_url($this->url);
+        $parts = \parse_url($this->url);
         $remote = isset($parts['scheme']) || isset($parts['host']);
         // try to read with file_get_contents
-        $newPSL = file_get_contents(($remote ? '' : __DIR__) . $this->url);
+        $newPSL = \file_get_contents(($remote ? '' : __DIR__) . $this->url);
         if (false !== $newPSL) {
             if ($remote) {
                 $this->saveLocalPSL($newPSL);
@@ -184,14 +184,14 @@ class PublicSuffixList
         }
 
         // try again with curl if file_get_contents failed
-        if (function_exists('curl_init') && false !== ($curlHandle = curl_init())) {
-            curl_setopt($curlHandle, CURLOPT_URL, $this->url);
-            curl_setopt($curlHandle, CURLOPT_FAILONERROR, true);
-            curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($curlHandle, CURLOPT_CONNECTTIMEOUT, 5);
-            $curlReturn = curl_exec($curlHandle);
-            curl_close($curlHandle);
-            if (false !== $curlReturn && is_string($curlReturn)) {
+        if (\function_exists('curl_init') && false !== ($curlHandle = \curl_init())) {
+            \curl_setopt($curlHandle, \CURLOPT_URL, $this->url);
+            \curl_setopt($curlHandle, \CURLOPT_FAILONERROR, true);
+            \curl_setopt($curlHandle, \CURLOPT_RETURNTRANSFER, 1);
+            \curl_setopt($curlHandle, \CURLOPT_CONNECTTIMEOUT, 5);
+            $curlReturn = \curl_exec($curlHandle);
+            \curl_close($curlHandle);
+            if (false !== $curlReturn && \is_string($curlReturn)) {
                 if ($remote) {
                     $this->saveLocalPSL($curlReturn);
                 }
@@ -209,7 +209,7 @@ class PublicSuffixList
      */
     private function getCacheFileName(string $url): string
     {
-        return __DIR__ . $this->dataDir . $this->cachedPrefix . md5($url);
+        return __DIR__ . $this->dataDir . $this->cachedPrefix . \md5($url);
     }
 
     /**
@@ -221,8 +221,8 @@ class PublicSuffixList
     private function readCachedPSL(string $url): ?array
     {
         $cacheFile = $this->getCacheFileName($url);
-        return file_exists($cacheFile)
-            ? unserialize(file_get_contents($cacheFile), ['allowed_classes' => false])
+        return \file_exists($cacheFile)
+            ? \unserialize(\file_get_contents($cacheFile), ['allowed_classes' => false])
             : null;
     }
 
@@ -234,7 +234,7 @@ class PublicSuffixList
      */
     private function cachePSL(string $url)
     {
-        return file_put_contents($this->getCacheFileName($url), serialize($this->tree));
+        return \file_put_contents($this->getCacheFileName($url), \serialize($this->tree));
     }
 
     /**
@@ -245,7 +245,7 @@ class PublicSuffixList
      */
     private function saveLocalPSL(string $fileContents)
     {
-        return file_put_contents(__DIR__ . $this->localPSL, $fileContents);
+        return \file_put_contents(__DIR__ . $this->localPSL, $fileContents);
     }
 
     /**
@@ -259,8 +259,8 @@ class PublicSuffixList
         if (null === $url) {
             $url = $this->sourceURL;
         }
-        $parts = parse_url($url);
-        $fileName = basename($parts['path']);
+        $parts = \parse_url($url);
+        $fileName = \basename($parts['path']);
         $this->localPSL = $this->dataDir . $fileName;
     }
 
@@ -273,15 +273,15 @@ class PublicSuffixList
     public function clearDataDirectory(bool $cacheOnly = false): void
     {
         $dir = __DIR__ . $this->dataDir;
-        if (is_dir($dir)) {
-            if (false !== ($dirHandle = opendir($dir))) {
-                while (false !== ($file = readdir($dirHandle))) {
-                    if ('file' === filetype($dir . $file)
+        if (\is_dir($dir)) {
+            if (false !== ($dirHandle = \opendir($dir))) {
+                while (false !== ($file = \readdir($dirHandle))) {
+                    if ('file' === \filetype($dir . $file)
                         && (!$cacheOnly || $this->startsWith($file, $this->cachedPrefix))) {
-                        unlink($dir . $file);
+                        \unlink($dir . $file);
                     }
                 }
-                closedir($dirHandle);
+                \closedir($dirHandle);
             }
         }
     }
