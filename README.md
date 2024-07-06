@@ -8,11 +8,11 @@ the list, please see [publicsuffix.org](https://publicsuffix.org/)
 
 # Installation
 
-> composer require geekwright/regdom
+> composer require xoops/regdom
 
 # Usage
 
-## Class Geekwright\RegDom\PublicSuffixList
+## Class Xoops\RegDom\PublicSuffixList
 This class handles all direct interaction with the public suffix list (PSL.)
 This includes, fetching the list from a source URL, caching that list
 locally, converting that list to a tree form to facilitate rapid lookup,
@@ -27,7 +27,7 @@ https://publicsuffix.org/list/public_suffix_list.dat
 Resets the current PSL, and uses the specified URL as the source.
 
 ### $psl->getTree()
-Returns the tree of the current PSL. `Geekwright\RegDom\RegisteredDomain`
+Returns the tree of the current PSL. `Xoops\RegDom\RegisteredDomain`
 uses this tree form for all lookups.
 
 ### $psl->clearDataDirectory(*$cacheOnly*)
@@ -35,7 +35,7 @@ By default, this will clear all cached PSL data, including local copies
 of remotely accessed PSL data. Pass *true* for `$cacheOnly` to clear only
 the serialized tree data.
 
-## Class Geekwright\RegDom\RegisteredDomain
+## Class Xoops\RegDom\RegisteredDomain
 This class can be used to determine the registrable domain portion of a
 URL, respecting the public suffix list conventions.
 
